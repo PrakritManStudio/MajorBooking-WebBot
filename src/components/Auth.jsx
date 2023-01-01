@@ -1,26 +1,29 @@
-import React, { useEffect ,useState, createContext} from "react"
-import firebaseConfig from "../firebase_config"
+import React, { useEffect, useState, createContext } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import firebaseConfig from "../firebase_config";
+import { getAuth } from "firebase/auth";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [currentUser, setCurrentUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(true);
+	const [currentUser, setCurrentUser] = useState(null);
 
-    useEffect(() => {
-        firebaseConfig.auth().onAuthStateChanged((user) => {
-            setCurrentUser(user);
-            setLoading(false);
-        });
-    }, []);
+	useEffect(() => {
+		const auth = getAuth(firebaseConfig);
+		auth.onAuthStateChanged((user) => {
+			setCurrentUser(user);
+			setLoading(false);
+		});
+	}, []);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+	if (loading) {
+		return <p>Loading...</p>;
+	}
 
-    return (
-        <AuthContext.Provider value={{ currentUser }}>
-            {children}
-        </AuthContext.Provider>
-    );
-}
+	return (
+		<AuthContext.Provider value={{ currentUser }}>
+			{children}
+		</AuthContext.Provider>
+	);
+};
