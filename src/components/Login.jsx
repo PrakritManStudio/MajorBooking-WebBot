@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import { Navigate } from "react-router-dom"
 import firebaseConfig from "../firebase_config";
 import {
 	getAuth,
@@ -10,7 +11,7 @@ import swal from 'sweetalert';
 import { AuthContext } from "./Auth"
 
 const Login = () => {
-	const [user, setUser] = useState(null);
+	// const [user, setUser] = useState(null);
 	const [phone, setPhone] = useState("");
 	const [otp, setOtp] = useState("");
 	const [expandForm, setExpandForm] = useState(false);
@@ -18,10 +19,10 @@ const Login = () => {
 	const [disabledPhoneField, setDisabledPhoneField] = useState(false);
 	const [disabledLoginBtn, setDisabledLoginBtn] = useState(true);
 
-	// const { currentUser } = useContext(AuthContext);
-	// if (currentUser) {
-	// 	return <Redirect to="/dashboard" />;
-	// }
+	const { currentUser } = useContext(AuthContext);
+	if (currentUser) {
+		return <Navigate to="/dashboard" />;
+	}
 
 	// เช็คว่าใส่เบอร์มาครบ 10 หลักหรือยัง ถ้าครบแล้วให้แสดงปุ่ม Send OTP
 	const chackPhone = (e) => {
@@ -48,7 +49,7 @@ const Login = () => {
 			{
 				size: "invisible",
 				callback: (response) => {
-					swal("ส่ง OTP สำเร็จ", "กรุณาตรวจสอบ OTP ที่มือถือ", "success");
+					// swal("ส่ง OTP สำเร็จ", "กรุณาตรวจสอบ OTP ที่มือถือ", "success");
 					// onSignInSubmit();
 				},
 				defaultCountry: "TH",
@@ -72,11 +73,12 @@ const Login = () => {
 				// SMS sent. Prompt user to type the code from the message, then sign the
 				// user in with confirmationResult.confirm(code).
 				window.confirmationResult = confirmationResult;
+				swal("ส่ง OTP สำเร็จ", "กรุณาตรวจสอบ OTP ที่มือถือ", "success");
 				// ...
 			})
 			.catch((error) => {
 				// Error; SMS not sent
-				// ...
+				swal("ส่ง OTP ไม่สำเร็จ", "เกิดข้อพิดพลาด กรุณาลองใหม่อีกครั้ง", "warning");
 			});
 	};
 
@@ -89,6 +91,7 @@ const Login = () => {
 				// User signed in successfully.
 				const user = result.user;
 				swal("ล็อกอินสำเร็จ", "ยินดีต้อนรับ: "+ user.phoneNumber, "success");
+				// setCurrentUser(user);
 			})
 			.catch((error) => {
 				// User couldn't sign in (bad verification code?)
@@ -97,6 +100,7 @@ const Login = () => {
 	};
 	return (
 		<dev>
+			<h1>Login</h1>
 			<form>
 				<div className="input-group mb-3">
 					<input
